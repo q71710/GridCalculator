@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\GridCalculator.cs" />
     <Compile Include="Model\GridSetting.cs" />
     <Compile Include="Model\ICalculator.cs" />
     <Compile Include="Model\Order.cs" />

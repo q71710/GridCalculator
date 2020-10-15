@@ -2,6 +2,6 @@
 {
     public interface ICalculator
     {
-        void Calc();
+        decimal CalcPriceGap();
     }
 }
