@@ -8,12 +8,7 @@
         /// <summary>
         /// 標的物名稱
         /// </summary>
-        public string TargetName { get; set; }
-
-        /// <summary>
-        /// 標的物數量
-        /// </summary>
-        public decimal Amount { get; set; }
+        public CoinType Coin { get; set; }
 
         /// <summary>
         /// 訂單類型
@@ -21,9 +16,19 @@
         public OrderType Type { get; set; }
 
         /// <summary>
-        /// 成本
+        /// 標的物數量
         /// </summary>
-        public decimal Cost { get; set; }
+        public decimal Amount { get; set; }
+
+        /// <summary>
+        /// 價格
+        /// </summary>
+        public decimal Price { get; set; }
+
+        /// <summary>
+        /// 與上一單差異百分比
+        /// </summary>
+        public decimal Percent { get; set; }
     }
 
     /// <summary>

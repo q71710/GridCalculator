@@ -41,7 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Coin.cs" />
+    <Compile Include="Model\GridCalc.cs" />
     <Compile Include="Model\GridCalculator.cs" />
+    <Compile Include="Model\GridResult.cs" />
     <Compile Include="Model\GridSetting.cs" />
     <Compile Include="Model\ICalculator.cs" />
     <Compile Include="Model\Order.cs" />

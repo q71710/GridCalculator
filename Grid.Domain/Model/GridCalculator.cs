@@ -11,7 +11,10 @@ namespace Grid.Domain.Model
             setting = gridSetting;
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public decimal CalcPriceGap()
         {
             var midValue = setting.TopPrice - setting.BottomPrice;
@@ -19,6 +22,16 @@ namespace Grid.Domain.Model
             var result = Math.Round(midValue / setting.TotalGrid, 3);
 
             return result;
+        }
+
+        public void SetValue(GridSetting gridSetting)
+        {
+            throw new NotImplementedException();
+        }
+
+        public (Exception exception, GridResult result) GetResult()
+        {
+            throw new NotImplementedException();
         }
     }
 }

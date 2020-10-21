@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Grid.Domain.Model
+﻿namespace Grid.Domain.Model
 {
     public class GridSetting
     {
@@ -20,8 +18,13 @@ namespace Grid.Domain.Model
         public decimal BottomPrice { get; set; }
 
         /// <summary>
-        /// 網格總數量
+        /// 網格總數量(偶數)
         /// </summary>
         public int TotalGrid { get; set; }
+
+        /// <summary>
+        /// 交易手續費
+        /// </summary>
+        public decimal TradeFee { get; set; }
     }
 }
