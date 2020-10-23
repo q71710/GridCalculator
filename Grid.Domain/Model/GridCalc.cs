@@ -31,7 +31,16 @@ namespace Grid.Domain.Model
 
             var 單一格下單價格差距 = 高低價格間距 / setting.TotalGrid;
 
-            return new GridResult { PriceGap = 單一格下單價格差距 };
+            var amountOfBuyOrder = (int)Math.Ceiling((setting.MarketPrice - setting.BottomPrice) / 單一格下單價格差距);
+
+            var amountOfSellOrder = (int)Math.Ceiling((setting.TopPrice - setting.MarketPrice) / 單一格下單價格差距);
+
+            return new GridResult 
+            { 
+                PriceGap = 單一格下單價格差距,
+                AmountOfBuyOrder = amountOfBuyOrder,
+                AmountOfSellOrder = amountOfSellOrder
+            };
         }
     }
 

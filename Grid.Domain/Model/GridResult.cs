@@ -16,9 +16,9 @@ namespace Grid.Domain.Model
             set => priceGap = Math.Round(value, 4);
         }
 
-        public int AmountOfBuyOrder { get; private set; }
+        public int AmountOfBuyOrder { get; set; }
 
-        public int AmountOfSellOrder { get; private set; }
+        public int AmountOfSellOrder { get; set; }
 
         public IEnumerable<Order> BuyOrders { get; private set; }
 

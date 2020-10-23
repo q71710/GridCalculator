@@ -39,7 +39,8 @@ namespace Grid.Domain.Tests
             {
                 TopPrice = 410m,
                 BottomPrice = 350m,
-                TotalGrid = 22
+                TotalGrid = 22,
+                MarketPrice = 390
             };
 
             gridCalc.SetValue(setting);
@@ -47,6 +48,8 @@ namespace Grid.Domain.Tests
 
             Assert.IsNull(actual.exception);
             Assert.AreEqual(2.7273m, actual.result.PriceGap);
+            Assert.AreEqual(15, actual.result.AmountOfBuyOrder);
+            Assert.AreEqual(8, actual.result.AmountOfSellOrder);
         }
 
         [TestMethod]
@@ -56,7 +59,8 @@ namespace Grid.Domain.Tests
             {
                 TopPrice = 10000m,
                 BottomPrice = 5000m,
-                TotalGrid = 5 //6-1
+                TotalGrid = 5,
+                MarketPrice = 6500m
             };
 
             gridCalc.SetValue(setting);
@@ -64,6 +68,28 @@ namespace Grid.Domain.Tests
 
             Assert.IsNull(actual.exception);
             Assert.AreEqual(1000m, actual.result.PriceGap);
+            Assert.AreEqual(2, actual.result.AmountOfBuyOrder);
+            Assert.AreEqual(4, actual.result.AmountOfSellOrder);
+        }
+
+        [TestMethod]
+        public void 計算掛單價差距值3_1()
+        {
+            GridSetting setting = new GridSetting
+            {
+                TopPrice = 10000m,
+                BottomPrice = 5000m,
+                TotalGrid = 5,
+                MarketPrice = 5500m
+            };
+
+            gridCalc.SetValue(setting);
+            var actual = gridCalc.GetResult();
+
+            Assert.IsNull(actual.exception);
+            Assert.AreEqual(1000m, actual.result.PriceGap);
+            Assert.AreEqual(1, actual.result.AmountOfBuyOrder);
+            Assert.AreEqual(5, actual.result.AmountOfSellOrder);
         }
 
         [TestMethod]

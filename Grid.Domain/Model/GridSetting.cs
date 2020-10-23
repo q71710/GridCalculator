@@ -26,5 +26,10 @@
         /// 交易手續費
         /// </summary>
         public decimal TradeFee { get; set; }
+
+        /// <summary>
+        /// 市場最後成交價格
+        /// </summary>
+        public decimal MarketPrice { get; set; }
     }
 }
