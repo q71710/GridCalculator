@@ -2,18 +2,12 @@
 
 namespace Grid.Domain.Model
 {
-    public interface ICalculator
-    {
-        decimal CalcPriceGap();
-    }
-
     /// <summary>
     /// Grid計算器介面
     /// 更動 任何一項，都能產出結果
     /// </summary>
     public interface IGridCalc
     {
-
         /// <summary>
         /// 賦值
         /// </summary>
