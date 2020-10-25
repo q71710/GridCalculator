@@ -31,17 +31,19 @@ namespace Grid.Domain.Model
             set => startPrice = Math.Round(value, roundIndex);
         }
 
+        public int RoundIndex => roundIndex;
+
         private void SetCoinIndex()
         {
             switch(BuyCoin)
             {
                 case CoinType.ETH:
                 case CoinType.XMR:
+                case CoinType.BTC:
                     roundIndex = 2;
                     break;
                 case CoinType.IOTA:
                 case CoinType.UNI:
-                case CoinType.BTC:
                     roundIndex = 4;
                     break;
                 default:

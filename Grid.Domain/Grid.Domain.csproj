@@ -43,10 +43,16 @@
   <ItemGroup>
     <Compile Include="Model\Coin.cs" />
     <Compile Include="Model\GridCalc.cs" />
-    <Compile Include="Model\GridResult.cs" />
+    <Compile Include="Model\GridInfo.cs" />
+    <Compile Include="Model\PendingOrder.cs" />
     <Compile Include="Model\GridSetting.cs" />
     <Compile Include="Model\ICalculator.cs" />
+    <Compile Include="Model\JobInfo.cs" />
+    <Compile Include="Model\Record.cs" />
+    <Compile Include="Model\Unit\IUnit.cs" />
     <Compile Include="Model\Order.cs" />
+    <Compile Include="Model\Unit\OrderUnit.cs" />
+    <Compile Include="Model\Unit\PriceGapUnit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

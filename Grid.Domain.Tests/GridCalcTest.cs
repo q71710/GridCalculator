@@ -21,216 +21,272 @@ namespace Grid.Domain.Tests
         }
 
         [TestMethod]
-        public void 小數後2_市價接近下限不產買單()
+        public void 整數_市價接近下限不產買單()
         {
-            GridSetting setting = new GridSetting(CoinType.BTC)
+            GridInfo info = new GridInfo
             {
-                TopPrice = 10000m,
-                BottomPrice = 5000m,
-                TotalGrid = 5,
-                MarketPrice = 5500m
-            };
-
-            gridCalc.SetValue(setting);
-            var actual = gridCalc.GetResult();
-
-            Assert.IsNull(actual.exception);
-
-            GridResult expected = new GridResult
-            {
-                PriceGap = 1000m,
-                BuyOrders = new List<Order> { },
-                SellOrders = new List<Order>
+                Setting = new GridSetting(CoinType.BTC)
                 {
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingSell, Price = 6500m },
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingSell, Price = 7500m },
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingSell, Price = 8500m },
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingSell, Price = 9500m },
+                    TopPrice = 10000m,
+                    BottomPrice = 5000m,
+                    TotalGrid = 5,
+                    MarketPrice = 5500m
                 }
             };
 
-            actual.result.Should().BeEquivalentTo(expected);
+            var result = gridCalc.GetResult(info);
+            Assert.IsNull(result.exception);
+            Assert.IsNotNull(result.gridInfo);
+            Assert.AreEqual(1000m, result.gridInfo.PriceGap);
+
+            var actual = result.gridInfo.PendingOrders;
+            var expected = new PendingOrder
+            {
+                BuyOrders = new List<Order> { },
+                SellOrders = new List<Order>
+                {
+                    new Order(CoinType.BTC, OrderType.PendingSell) { Price = 6500m },
+                    new Order(CoinType.BTC, OrderType.PendingSell) { Price = 7500m },
+                    new Order(CoinType.BTC, OrderType.PendingSell) { Price = 8500m },
+                    new Order(CoinType.BTC, OrderType.PendingSell) { Price = 9500m }
+                }
+            };
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void 整數_市價接近下限產少量買單()
+        {
+            GridInfo info = new GridInfo
+            {
+                Setting = new GridSetting(CoinType.BTC)
+                {
+                    TopPrice = 10000m,
+                    BottomPrice = 5000m,
+                    TotalGrid = 5,
+                    MarketPrice = 6200m
+                },
+                PendingOrders = null
+            };
+
+            var result = gridCalc.GetResult(info);
+            Assert.IsNull(result.exception);
+            Assert.IsNotNull(result.gridInfo);
+            Assert.AreEqual(1000m, result.gridInfo.PriceGap);
+
+            var actual = result.gridInfo.PendingOrders;
+            var expected = new PendingOrder
+            {
+                BuyOrders = new List<Order>
+                {
+                    new Order(CoinType.BTC, OrderType.PendingBuy) { Price = 5200m },
+                },
+                SellOrders = new List<Order>
+                {
+                    new Order(CoinType.BTC, OrderType.PendingSell) { Price = 7200m },
+                    new Order(CoinType.BTC, OrderType.PendingSell) { Price = 8200m },
+                    new Order(CoinType.BTC, OrderType.PendingSell) { Price = 9200m }
+                }
+            };
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void 整數_市價接近上限產少量賣單()
+        {
+            GridInfo info = new GridInfo
+            {
+                Setting = new GridSetting(CoinType.BTC)
+                {
+                    TopPrice = 10000m,
+                    BottomPrice = 5000m,
+                    TotalGrid = 5,
+                    MarketPrice = 8800m
+                },
+            };
+
+            var result = gridCalc.GetResult(info);
+            Assert.IsNull(result.exception);
+            Assert.IsNotNull(result.gridInfo);
+            Assert.AreEqual(1000m, result.gridInfo.PriceGap);
+
+            var actual = result.gridInfo.PendingOrders;
+            var expected = new PendingOrder
+            {
+                BuyOrders = new List<Order>
+                {
+                    new Order(CoinType.BTC, OrderType.PendingBuy) { Price = 7800m },
+                    new Order(CoinType.BTC, OrderType.PendingBuy) { Price = 6800m },
+                    new Order(CoinType.BTC, OrderType.PendingBuy) { Price = 5800m },
+                },
+                SellOrders = new List<Order>
+                {
+                    new Order(CoinType.BTC, OrderType.PendingSell) { Price = 9800m }
+                }
+            };
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void 整數_市價接近上限不產賣單()
+        {
+            GridInfo info = new GridInfo
+            {
+                Setting = new GridSetting(CoinType.BTC)
+                {
+                    TopPrice = 10000m,
+                    BottomPrice = 5000m,
+                    TotalGrid = 5,
+                    MarketPrice = 9800m
+                },
+                PendingOrders = null
+            };
+
+            var result = gridCalc.GetResult(info);
+            Assert.IsNull(result.exception);
+            Assert.IsNotNull(result.gridInfo);
+            Assert.AreEqual(1000m, result.gridInfo.PriceGap);
+
+            var actual = result.gridInfo.PendingOrders;
+            var expected = new PendingOrder
+            {
+                BuyOrders = new List<Order>
+                {
+                    new Order(CoinType.BTC, OrderType.PendingBuy) { Price = 8800m },
+                    new Order(CoinType.BTC, OrderType.PendingBuy) { Price = 7800m },
+                    new Order(CoinType.BTC, OrderType.PendingBuy) { Price = 6800m },
+                    new Order(CoinType.BTC, OrderType.PendingBuy) { Price = 5800m }
+                },
+                SellOrders = new List<Order> { }
+            };
+
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
         public void 小數後2_市價接近下限產少量買單()
         {
-            GridSetting setting = new GridSetting(CoinType.BTC)
+            GridInfo info = new GridInfo
             {
-                TopPrice = 10000m,
-                BottomPrice = 5000m,
-                TotalGrid = 5,
-                MarketPrice = 6200m
-            };
-
-            gridCalc.SetValue(setting);
-            var actual = gridCalc.GetResult();
-
-            Assert.IsNull(actual.exception);
-
-            GridResult expected = new GridResult
-            {
-                PriceGap = 1000m,
-                BuyOrders = new List<Order> 
+                Setting = new GridSetting(CoinType.BTC)
                 {
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingBuy, Price = 5200m },
-                },
-                SellOrders = new List<Order>
-                {
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingSell, Price = 7200m },
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingSell, Price = 8200m },
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingSell, Price = 9200m }
+                    TopPrice = 10000m,
+                    BottomPrice = 5000m,
+                    TotalGrid = 7,
+                    MarketPrice = 6200m
                 }
             };
 
-            actual.result.Should().BeEquivalentTo(expected);
-        }
+            var result = gridCalc.GetResult(info);
+            Assert.IsNull(result.exception);
+            Assert.IsNotNull(result.gridInfo);
+            Assert.AreEqual(714.29m, result.gridInfo.PriceGap);
 
-        [TestMethod]
-        public void 小數後2_市價接近上限產少量賣單()
-        {
-            GridSetting setting = new GridSetting(CoinType.BTC)
+            var actual= result.gridInfo.PendingOrders;
+            var expected = new PendingOrder
             {
-                TopPrice = 10000m,
-                BottomPrice = 5000m,
-                TotalGrid = 5,
-                MarketPrice = 8800m
-            };
-
-            gridCalc.SetValue(setting);
-            var actual = gridCalc.GetResult();
-
-            Assert.IsNull(actual.exception);
-
-            GridResult expected = new GridResult
-            {
-                PriceGap = 1000m,
                 BuyOrders = new List<Order>
                 {
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingBuy, Price = 7800m },
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingBuy, Price = 6800m },
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingBuy, Price = 5800m },
+                    new Order(CoinType.BTC, OrderType.PendingBuy) { Price = 5485.71m },
                 },
                 SellOrders = new List<Order>
                 {
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingSell, Price = 9800m },
+                    new Order(CoinType.BTC, OrderType.PendingSell){ Price = 6914.29m },
+                    new Order(CoinType.BTC, OrderType.PendingSell){ Price = 7628.58m },
+                    new Order(CoinType.BTC, OrderType.PendingSell){ Price = 8342.87m },
+                    new Order(CoinType.BTC, OrderType.PendingSell){ Price = 9057.16m },
+                    new Order(CoinType.BTC, OrderType.PendingSell){ Price = 9771.45m }
                 }
             };
 
-            actual.result.Should().BeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
-        public void 小數後2_市價接近上限不產賣單()
+        public void 小數後4_市價接近下限產少量買單()
         {
-            GridSetting setting = new GridSetting(CoinType.BTC)
+            GridInfo info = new GridInfo
             {
-                TopPrice = 10000m,
-                BottomPrice = 5000m,
-                TotalGrid = 5,
-                MarketPrice = 9800m
+                Setting = new GridSetting(CoinType.UNI)
+                {
+                    TopPrice = 3.6m,
+                    BottomPrice = 2.6m,
+                    TotalGrid = 11,
+                    MarketPrice = 2.9m
+                }
             };
 
-            gridCalc.SetValue(setting);
-            var actual = gridCalc.GetResult();
+            var result = gridCalc.GetResult(info);
+            Assert.IsNull(result.exception);
+            Assert.IsNotNull(result.gridInfo);
+            Assert.AreEqual(0.0909m, result.gridInfo.PriceGap);
 
-            Assert.IsNull(actual.exception);
-
-            GridResult expected = new GridResult
+            var actual = result.gridInfo.PendingOrders;
+            var expected = new PendingOrder
             {
-                PriceGap = 1000m,
                 BuyOrders = new List<Order>
                 {
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingBuy, Price = 8800m },
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingBuy, Price = 7800m },
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingBuy, Price = 6800m },
-                    new Order { Coin = CoinType.BTC, Type = OrderType.PendingBuy, Price = 5800m },
-                },
-                SellOrders = new List<Order> { }
-            };
-
-            actual.result.Should().BeEquivalentTo(expected);
-        }
-
-        [TestMethod]
-        public void 小數後1_市價接近下限產少量買單()
-        {
-            GridSetting setting = new GridSetting(CoinType.UNI)
-            {
-                TopPrice = 3.6m,
-                BottomPrice = 2.6m,
-                TotalGrid = 10,
-                MarketPrice = 2.9m
-            };
-
-            gridCalc.SetValue(setting);
-            var actual = gridCalc.GetResult();
-
-            Assert.IsNull(actual.exception);
-
-            GridResult expected = new GridResult
-            {
-                PriceGap = 0.1m,
-                BuyOrders = new List<Order>
-                {
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingBuy, Price = 2.8m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingBuy, Price = 2.7m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingBuy, Price = 2.6m },
+                    new Order(CoinType.UNI, OrderType.PendingBuy) { Price = 2.8091m },
+                    new Order(CoinType.UNI, OrderType.PendingBuy) { Price = 2.7182m },
+                    new Order(CoinType.UNI, OrderType.PendingBuy) { Price = 2.6273m }
                 },
                 SellOrders = new List<Order>
                 {
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.0m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.1m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.2m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.3m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.4m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.5m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.6m }
-
+                    new Order(CoinType.UNI, OrderType.PendingSell) { Price = 2.9909m },
+                    new Order(CoinType.UNI, OrderType.PendingSell) { Price = 3.0818m },
+                    new Order(CoinType.UNI, OrderType.PendingSell) { Price = 3.1727m },
+                    new Order(CoinType.UNI, OrderType.PendingSell) { Price = 3.2636m },
+                    new Order(CoinType.UNI, OrderType.PendingSell) { Price = 3.3545m },
+                    new Order(CoinType.UNI, OrderType.PendingSell) { Price = 3.4454m },
+                    new Order(CoinType.UNI, OrderType.PendingSell) { Price = 3.5363m }
                 }
             };
 
-            actual.result.Should().BeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(expected);
         }
 
-        [TestMethod]
-        public void 小數後1_市價接近下限產少量買單_2()
-        {
-            GridSetting setting = new GridSetting(CoinType.UNI)
-            {
-                TopPrice = 3.6m,
-                BottomPrice = 2.6m,
-                TotalGrid = 11,
-                MarketPrice = 2.9m
-            };
 
-            gridCalc.SetValue(setting);
-            var actual = gridCalc.GetResult();
+        //[TestMethod]
+        //public void 小數後1_市價接近下限產少量買單_2()
+        //{
+        //    GridSetting setting = new GridSetting(CoinType.UNI)
+        //    {
+        //        TopPrice = 3.6m,
+        //        BottomPrice = 2.6m,
+        //        TotalGrid = 11,
+        //        MarketPrice = 2.9m
+        //    };
 
-            Assert.IsNull(actual.exception);
+        //    gridCalc.SetValue(setting);
+        //    var actual = gridCalc.GetResult();
 
-            GridResult expected = new GridResult
-            {
-                PriceGap = 0.0909m,
-                BuyOrders = new List<Order>
-                {
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingBuy, Price = 2.8091m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingBuy, Price = 2.7182m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingBuy, Price = 2.6273m },
-                },
-                SellOrders = new List<Order>
-                {
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 2.9909m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.0818m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.1727m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.2636m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.3545m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.4454m },
-                    new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.5363m }
-                }
-            };
+        //    Assert.IsNull(actual.exception);
 
-            actual.result.Should().BeEquivalentTo(expected);
-        }
+        //    GridResult expected = new GridResult
+        //    {
+        //        PriceGap = 0.0909m,
+        //        BuyOrders = new List<Order>
+        //        {
+        //            new Order { Coin = CoinType.UNI, Type = OrderType.PendingBuy, Price = 2.8091m },
+        //            new Order { Coin = CoinType.UNI, Type = OrderType.PendingBuy, Price = 2.7182m },
+        //            new Order { Coin = CoinType.UNI, Type = OrderType.PendingBuy, Price = 2.6273m },
+        //        },
+        //        SellOrders = new List<Order>
+        //        {
+        //            new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 2.9909m },
+        //            new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.0818m },
+        //            new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.1727m },
+        //            new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.2636m },
+        //            new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.3545m },
+        //            new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.4454m },
+        //            new Order { Coin = CoinType.UNI, Type = OrderType.PendingSell, Price = 3.5363m }
+        //        }
+        //    };
+
+        //    actual.result.Should().BeEquivalentTo(expected);
+        //}
     }
 }
